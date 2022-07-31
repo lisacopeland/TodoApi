@@ -14,28 +14,10 @@ public class TodoController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("{username}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TodoItem[]))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TodoItem>> Get(string username)
-    {
-        Console.WriteLine($"Hi from get, the username is {username}");
-        var result = await DBCall.Query<TodoItem>("todos", username);
-        if (result != null)
-        {
-            return Ok(result);
-        }
-        else
-        {
-            return NotFound();
-        }
-    }
-
-
-    [HttpGet("{username}, {id}")]
+    [HttpGet()]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TodoItem))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TodoItem>> Get(string username, string? id)
+    public async Task<ActionResult<TodoItem>> Get([FromQuery]string username, [FromQuery]string? id)
     {
         var result = await DBCall.Query<TodoItem>("todos", username, id);
         if (result != null)
@@ -66,21 +48,37 @@ public class TodoController : ControllerBase
         }
     }
 
-   [HttpPut("{id}")]
+   [HttpPut()]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Put([FromBody]TodoItem changeTodoItem)
     {
-        return Ok();
+        bool success = await DBCall.WriteAsync<TodoItem>("todos", changeTodoItem);
+        if (success)
+        {
+            return Ok();
+        }
+        else
+        {
+            return BadRequest("Already exists");
+        }
     }
 
 
-    [HttpDelete("{id}")]
+    [HttpDelete()]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Delete(string Id)
+    public async Task<ActionResult> Delete([FromQuery]string username, [FromQuery]string id)
     {
-        return Ok();
-    }    
+        bool success = await DBCall.DeleteAsync("todos", username, id);
+        if (success)
+        {
+            return Ok();
+        }
+        else
+        {
+            return BadRequest("Already exists");
+        }
+    }
 
 }

@@ -18,7 +18,7 @@ public class TodoItem : DatabaseItem
 
     public string? Priority { get; set; }
 
-    public TodoItem(DateTime dueDate, string userName, string task, string priority = "5")
+    public TodoItem(DateTime dueDate, string userName, string task, string? priority = "5")
     {
         this.Id = Guid.NewGuid().ToString();
         this.DateAdded = DateTime.Now;
@@ -38,7 +38,9 @@ public class TodoItem : DatabaseItem
         this.Priority = todoItem.Priority;
     }
 
-    public TodoItem() { }
+    public TodoItem() {
+        this.Id = Guid.NewGuid().ToString();
+    }
     public override Dictionary<string, AttributeValue> GetItemData()
     {
         var data = new Dictionary<string, AttributeValue>

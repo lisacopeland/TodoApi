@@ -43,6 +43,27 @@ namespace TodoApi
             return true;
         }
 
+        public static async Task<bool> DeleteAsync(string tableName, string Pk, string Sk)
+        {
+            Dictionary<string, AttributeValue> expressionValues = new Dictionary<string, AttributeValue>()
+            {
+                { "Pk", new AttributeValue { S = Pk } },
+                { "Sk", new AttributeValue { S = Sk } }
+            };
+
+            // Create DeleteItem request
+            DeleteItemRequest request = new DeleteItemRequest
+            {
+                TableName = tableName,
+                Key = expressionValues
+            };
+
+            // Issue request
+            DeleteItemResponse result = await ddbClient.DeleteItemAsync(request);
+            return true;
+        }
+
+
         public static async Task<List<T>> Query<T>(string tableName, string pk, string? sk = null) where T : DatabaseItem
         {
             string keyCondition = "Pk = :pk";
@@ -53,7 +74,7 @@ namespace TodoApi
 
             if (sk != null)
             {
-                keyCondition += ", Sk = :sk";
+                keyCondition += " and Sk = :sk";
                 expressionValues.Add(":sk", new AttributeValue() { S = sk });
             }
             QueryRequest request = new QueryRequest()
@@ -75,12 +96,8 @@ namespace TodoApi
                 newItem.Populate(item);
                 toReturn.Add((T)newItem);
             }
-
-
             return toReturn;
         }
-
-
     }
 
 
