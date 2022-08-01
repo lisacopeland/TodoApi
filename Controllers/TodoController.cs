@@ -37,15 +37,8 @@ public class TodoController : ControllerBase
     {
         Console.WriteLine("hi from the post");
 
-        bool success = await DBCall.WriteAsync<TodoItem>("todos", newTodoItem);
-        if (success)
-        {
-            return Ok();
-        }
-        else
-        {
-            return BadRequest("Already exists");
-        }
+        TodoItem result = await DBCall.WriteAsync<TodoItem>("todos", newTodoItem);
+        return Ok(result);
     }
 
    [HttpPut()]
@@ -53,15 +46,8 @@ public class TodoController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Put([FromBody]TodoItem changeTodoItem)
     {
-        bool success = await DBCall.WriteAsync<TodoItem>("todos", changeTodoItem);
-        if (success)
-        {
-            return Ok();
-        }
-        else
-        {
-            return BadRequest("Already exists");
-        }
+        TodoItem result = await DBCall.WriteAsync<TodoItem>("todos", changeTodoItem);
+        return Ok(result);
     }
 
 

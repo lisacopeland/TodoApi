@@ -13,7 +13,7 @@ namespace TodoApi
         {
             Horse trigger = new Horse("LoneRanger", "Trigger", "Palimino", "Quarter");
 
-            bool success = await DBCall.WriteAsync<Horse>("horses", trigger);
+            Horse success = await DBCall.WriteAsync<Horse>("horses", trigger);
 
             List<Horse> horses = await DBCall.Query<Horse>("horses", "LoneRanger", "Trigger");
         }
@@ -27,7 +27,7 @@ namespace TodoApi
             ddbClient = new AmazonDynamoDBClient();
         }
 
-        public static async Task<bool> WriteAsync<T>(string tableName, T item) where T : DatabaseItem
+        public static async Task<T> WriteAsync<T>(string tableName, T item) where T : DatabaseItem
         {
             var itemData = item.GetItemData();
 
@@ -40,7 +40,7 @@ namespace TodoApi
             PutItemResponse response = await ddbClient.PutItemAsync(request);
 
 
-            return true;
+            return item;
         }
 
         public static async Task<bool> DeleteAsync(string tableName, string Pk, string Sk)

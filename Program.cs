@@ -9,6 +9,13 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// CORS - Allow calling the API from WebBrowsers
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials()
+    .SetIsOriginAllowed(origin => true));// Allow any origin  
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
