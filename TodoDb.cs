@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 
@@ -89,15 +85,41 @@ namespace TodoApi
             List<T> toReturn = new List<T>();
             foreach (Dictionary<string, AttributeValue> item in response.Items)
             {
-                //ConstructorInfo ci = typeof(T).GetConstructor(new Type[] { });
-                //DatabaseItem newItem = (DatabaseItem)ci.Invoke(null);
-
                 DatabaseItem newItem = DatabaseItem.CreateItem(typeof(T).Name);
                 newItem.Populate(item);
                 toReturn.Add((T)newItem);
             }
             return toReturn;
         }
+
+        public static async Task<List<T>> QueryByIndex<T>(string tableName, string pk, string index) where T : DatabaseItem
+        {
+            string keyCondition = "Pk = :pk";
+            var expressionValues = new Dictionary<string, AttributeValue>()
+            {
+                { ":pk", new AttributeValue() { S = pk } }
+            };
+
+            QueryRequest request = new QueryRequest()
+            {
+                TableName = tableName,
+                IndexName = index,
+                KeyConditionExpression = keyCondition,
+                ExpressionAttributeValues = expressionValues
+            };
+
+            QueryResponse response = await ddbClient.QueryAsync(request);
+
+            List<T> toReturn = new List<T>();
+            foreach (Dictionary<string, AttributeValue> item in response.Items)
+            {
+                DatabaseItem newItem = DatabaseItem.CreateItem(typeof(T).Name);
+                newItem.Populate(item);
+                toReturn.Add((T)newItem);
+            }
+            return toReturn;
+        }
+
     }
 
 

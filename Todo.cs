@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
-using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 
 namespace TodoApi;
@@ -52,7 +47,7 @@ public class TodoItem : DatabaseItem
                 { "DateAdded", new AttributeValue() { S = this.DateAdded.ToString() } },
                 { "DueDate", new AttributeValue() { S = this.DueDate.ToString() } },
                 { "Task", new AttributeValue() { S = this.Task } },
-                { "Priority", new AttributeValue() { S = this.Priority.ToString() }}
+                { "Priority", new AttributeValue() { S = (this.Priority != null) ? this.Priority.ToString() : "5" }}
             };
 
         return data;
