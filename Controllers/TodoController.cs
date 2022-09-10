@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TodoApi.Controllers;
 
+[Authorize]
+[Route("todos/[controller]")]
 [ApiController]
-[Route("[controller]")]
 public class TodoController : ControllerBase
 {
     private readonly ILogger<TodoController> _logger;
