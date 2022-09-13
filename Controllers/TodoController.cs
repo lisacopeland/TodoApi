@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace TodoApi.Controllers;
 
-[Authorize]
+// [Authorize]
 [Route("todos/[controller]")]
 [ApiController]
 public class TodoController : ControllerBase

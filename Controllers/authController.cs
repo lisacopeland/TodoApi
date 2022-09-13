@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 namespace TodoApi.Controllers
 {
 
-    // [Route("auth/[controller]")]
     [ApiController]
     public class authController : ControllerBase
     {
@@ -43,11 +42,15 @@ namespace TodoApi.Controllers
             request.UserAttributes.Add(emailAttribute);
 
             var response = await cognito.SignUpAsync(request);
-            return Ok();
+            if (response.HttpStatusCode == System.Net.HttpStatusCode.OK) {
+                return Ok();
+            } else {
+              return BadRequest();
+            }
         }
 
         [Route("auth/signin")]
-        public async Task<ActionResult<string>> SignIn([FromQuery] AWSUser user)
+        public async Task<ActionResult<string>> SignIn([FromQuery] string Username,[FromQuery] string Password, [FromQuery] string Email)
         {
             var cognito = new AmazonCognitoIdentityProviderClient(_region);
 
@@ -58,12 +61,18 @@ namespace TodoApi.Controllers
                 AuthFlow = AuthFlowType.ADMIN_USER_PASSWORD_AUTH
             };
 
-            request.AuthParameters.Add("USERNAME", user.Username);
-            request.AuthParameters.Add("PASSWORD", user.Password);
+            request.AuthParameters.Add("USERNAME", Username);
+            request.AuthParameters.Add("PASSWORD", Password);
 
             var response = await cognito.AdminInitiateAuthAsync(request);
-
-            return Ok(response.AuthenticationResult.IdToken);
+            if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return Ok(response.AuthenticationResult);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }        
     }
 }
