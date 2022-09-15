@@ -42,15 +42,43 @@ namespace TodoApi.Controllers
             request.UserAttributes.Add(emailAttribute);
 
             var response = await cognito.SignUpAsync(request);
-            if (response.HttpStatusCode == System.Net.HttpStatusCode.OK) {
+            if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+            {
                 return Ok();
-            } else {
-              return BadRequest();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [Route("auth/refreshtoken")]
+        public async Task<ActionResult<string>> RefreshToken([FromQuery] string RefreshToken)
+        {
+            var cognito = new AmazonCognitoIdentityProviderClient(_region);
+
+            var request = new AdminInitiateAuthRequest
+            {
+                UserPoolId = "us-west-2_IrEqKjSrn",
+                ClientId = _clientId,
+                AuthFlow = AuthFlowType.REFRESH_TOKEN_AUTH
+            };
+
+            request.AuthParameters.Add("REFRESH_TOKEN", RefreshToken);
+
+            var response = await cognito.AdminInitiateAuthAsync(request);
+            if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return Ok(response.AuthenticationResult);
+            }
+            else
+            {
+                return BadRequest();
             }
         }
 
         [Route("auth/signin")]
-        public async Task<ActionResult<string>> SignIn([FromQuery] string Username,[FromQuery] string Password, [FromQuery] string Email)
+        public async Task<ActionResult<string>> SignIn([FromQuery] string Username, [FromQuery] string Password, [FromQuery] string Email)
         {
             var cognito = new AmazonCognitoIdentityProviderClient(_region);
 
@@ -73,6 +101,6 @@ namespace TodoApi.Controllers
             {
                 return BadRequest();
             }
-        }        
+        }
     }
 }

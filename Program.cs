@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,14 +8,19 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
     {
-        options.Audience = "c18kuusdt073nqkk1uecnusd4";
-        options.Authority = "https://cognito-idp.us-west-2.amazonaws.com/us-west-2_IrEqKjSrn";
+        options.Audience = "Your App Client ID goes here!";
+        options.Authority = "Your Authority URL goes here!";
     });
 
-var app = builder.Build();
+builder.Services.AddMvc();
+
 
 // CORS - Allow calling the API from WebBrowsers
 app.UseCors(x => x
@@ -30,7 +37,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
